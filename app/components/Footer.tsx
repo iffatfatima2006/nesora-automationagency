@@ -188,10 +188,10 @@ export default function Footer() {
                                 <h4 className="text-white font-semibold text-sm uppercase tracking-wider">Socials</h4>
                                 <ul className="space-y-3">
                                     {[
-                                        { name: "LinkedIn", url: "https://www.linkedin.com/in/iffat-fatima66/" },
-                                        { name: "Instagram", url: "https://www.instagram.com/" },
-                                        { name: "Facebook", url: "https://www.facebook.com/" },
-                                        { name: "X (Twitter)", url: "https://www.x.com/" },
+                                        { name: "LinkedIn", url: "#" },
+                                        { name: "Instagram", url: "#" },
+                                        { name: "Facebook", url: "#" },
+                                        { name: "X (Twitter)", url: "#" },
                                     ].map((item) => (
                                         <li key={item.name}>
                                             <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors text-sm">
