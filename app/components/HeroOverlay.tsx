@@ -19,7 +19,7 @@ export default function HeroOverlay() {
                     <h2
                         className="text-[12vw] leading-none tracking-normal select-none text-white uppercase font-[family-name:var(--font-climate)] stabilize-text"
                     >
-                        NEXORA
+                        EXERRA
                     </h2>
                 </div>
             </motion.div>

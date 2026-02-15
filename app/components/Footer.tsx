@@ -189,6 +189,9 @@ export default function Footer() {
                                 <ul className="space-y-3">
                                     {[
                                         { name: "LinkedIn", url: "https://www.linkedin.com/in/iffat-fatima66/" },
+                                        { name: "Instagram", url: "https://www.instagram.com/" },
+                                        { name: "Facebook", url: "https://www.facebook.com/" },
+                                        { name: "X (Twitter)", url: "https://www.x.com/" },
                                     ].map((item) => (
                                         <li key={item.name}>
                                             <a href={item.url} target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors text-sm">

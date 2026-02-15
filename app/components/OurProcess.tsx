@@ -53,7 +53,7 @@ const Step1Visual = () => {
         <div className="absolute bottom-4 left-0 right-0 text-center">
           <span className="text-xs uppercase tracking-[0.2em] text-blue-400 font-bold"
             style={{ fontFamily: 'var(--font-climate)' }}>
-            NEXORA
+            EXERRA
           </span>
         </div>
       </div>
@@ -85,7 +85,7 @@ const Step1Visual = () => {
 
 const Step2Visual = () => {
   const codeLines = [
-    "import { Solution } from '@nexora/core';",
+    "import { Solution } from '@exerra/core';",
     "",
     "const architecture = new Solution({",
     "  cloud: 'aws',",
@@ -633,7 +633,7 @@ const ProcessCard = ({ step, index, totalProgress, POSITIONS, stepsCount }: Proc
             SYS_PROCESS_INIT::{index} // BUFFER_LATENCY::14ms // CORE_SYNC_OK
           </div>
           <div className="absolute bottom-12 left-8 text-[8px] font-mono text-blue-400/30 -rotate-90 origin-left whitespace-nowrap">
-            NEXORA_PROTOCOL_V4.2 // ENCRYPT_AES_256 // KEY_VERIFIED
+            EXERRA_PROTOCOL_V4.2 // ENCRYPT_AES_256 // KEY_VERIFIED
           </div>
 
           {/* Floating Technical Particles - CSS only */}

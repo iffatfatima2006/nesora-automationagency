@@ -30,7 +30,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Nexora - Premium Automation Agency",
+  title: "Exerra - Premium Automation Agency",
   description: "You demand — We deliver. High-end automation solutions for modern businesses.",
 };
 

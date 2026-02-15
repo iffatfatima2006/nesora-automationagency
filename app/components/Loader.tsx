@@ -22,7 +22,7 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
     updateTime();
     const timeInterval = setInterval(updateTime, 1000);
 
-    const hasVisited = sessionStorage.getItem("nexora_visited");
+    const hasVisited = sessionStorage.getItem("exerra_visited");
 
     // Show percentage first
     setTimeout(() => {
@@ -34,7 +34,7 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
     const startTime = Date.now();
 
     if (!hasVisited) {
-      sessionStorage.setItem("nexora_visited", "true");
+      sessionStorage.setItem("exerra_visited", "true");
     }
 
     const animateProgress = () => {
@@ -98,7 +98,7 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
           animate={{ opacity: showPercentage && !isComplete ? 1 : 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
         >
-          <div className="uppercase tracking-[0.3em]">NEXORA</div>
+          <div className="uppercase tracking-[0.3em]">EXERRA</div>
         </motion.div>
 
         <motion.div

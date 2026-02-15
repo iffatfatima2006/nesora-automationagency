@@ -7,21 +7,21 @@ import { useRef } from "react";
 const testimonials = [
     {
         id: 1,
-        quote: "Nexora's AI transforms went beyond automation; they fundamentally reshaped our operational efficiency. The level of precision and strategic insight is unparalleled.",
+        quote: "Exerra's AI transforms went beyond automation; they fundamentally reshaped our operational efficiency. The level of precision and strategic insight is unparalleled.",
         author: "Sarah Jensen",
         role: "COO at BritTalent",
         image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400&h=400",
     },
     {
         id: 2,
-        quote: "The integration process was seamless. We saw a 40% increase in lead conversion within the first quarter. Nexora is the baseline for premium AI consulting.",
+        quote: "The integration process was seamless. We saw a 40% increase in lead conversion within the first quarter. Exerra is the baseline for premium AI consulting.",
         author: "Marcus Chen",
         role: "VP of Growth, Syncura",
         image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=400&h=400",
     },
     {
         id: 3,
-        quote: "Working with Nexora felt like having an elite R&D team on demand. Their ability to translate complex data into actionable AI models is world-class.",
+        quote: "Working with Exerra felt like having an elite R&D team on demand. Their ability to translate complex data into actionable AI models is world-class.",
         author: "Elena Rodriguez",
         role: "CEO at Hazen.ai",
         image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=400&h=400",

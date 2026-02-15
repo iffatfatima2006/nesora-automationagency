@@ -7,7 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 const caseStudies = [
   {
     id: 0,
-    brand: "NEXORA",
+    brand: "EXERRA",
     isIntro: true,
     statement: "HOW AI TRANSFORMS BUSINESSES",
     image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2672&auto=format&fit=crop",
