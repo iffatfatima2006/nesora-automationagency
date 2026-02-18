@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
+import { useRef, memo, useState } from "react";
+import { motion, useScroll, useTransform, MotionValue, useWillChange, useMotionValueEvent, useMotionValue } from "framer-motion";
 import DarkVeil from "./DarkVeil";
 
 // Custom Visual Components for each step
@@ -33,21 +33,50 @@ const Icons = {
   )
 };
 
-const Step1Visual = () => {
+const ChecklistItem = ({ item, i, progress }: { item: any, i: number, progress: MotionValue<number> }) => {
+  const opacity = useTransform(progress, [-0.2 + (i * 0.05), 0, 0.2 - (i * 0.05)], [0, 1, 0]);
+  const x = useTransform(progress, [-0.2 + (i * 0.05), 0], [20, 0]);
+
+  return (
+    <motion.div
+      style={{ opacity, x }}
+      className="flex items-center gap-3 bg-white/[0.03] p-3 rounded-lg border border-white/10"
+    >
+      <div className="text-blue-400">{item.icon}</div>
+      <span className="text-sm font-medium text-white/80">{item.text}</span>
+      <div className="ml-auto w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
+    </motion.div>
+  );
+};
+
+const Step1Visual = ({ progress }: { progress: MotionValue<number> }) => {
+  const isActive = useTransform(progress, (p: number) => p > -0.5 && p < 0.5);
+  const [shouldRender, setShouldRender] = useState(false);
+  useMotionValueEvent(isActive, "change", (v) => setShouldRender(v));
+
+  const items = [
+    { icon: <Icons.Zap />, text: "Analysis" },
+    { icon: <Icons.Refresh />, text: "Mapping" },
+    { icon: <Icons.Shield />, text: "Security" },
+    { icon: <Icons.Chart />, text: "Flow Check" }
+  ];
+
   return (
     <div className="flex h-full gap-8 p-8">
       {/* LHS: Scanner */}
       <div className="flex-1 bg-white/5 rounded-xl border border-white/10 flex items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent" />
         <div className="w-48 h-48 rounded-full border border-blue-500/30 relative flex items-center justify-center">
-          <div
-            className="absolute inset-0 rounded-full border-t-2 border-r-2 border-blue-500/80 animate-spin"
-            style={{ borderBottomColor: 'transparent', borderLeftColor: 'transparent', animationDuration: '4s' }}
-          />
-          <div
-            className="w-32 h-32 rounded-full bg-blue-500/10 animate-pulse"
-          />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_50%,rgba(0,0,0,0.4)_100%)]" />
+          {shouldRender && (
+            <>
+              <div
+                className="absolute inset-0 rounded-full border-t-2 border-r-2 border-blue-500/80 animate-spin"
+                style={{ borderBottomColor: 'transparent', borderLeftColor: 'transparent', animationDuration: '4s' }}
+              />
+              <div className="w-32 h-32 rounded-full bg-blue-500/10 animate-pulse" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_50%,rgba(0,0,0,0.4)_100%)]" />
+            </>
+          )}
           <div className="text-blue-400 opacity-50"><Icons.Scan /></div>
         </div>
         <div className="absolute bottom-4 left-0 right-0 text-center">
@@ -60,30 +89,35 @@ const Step1Visual = () => {
 
       {/* RHS: Checklist */}
       <div className="flex-1 flex flex-col justify-center space-y-4">
-        {[
-          { icon: <Icons.Zap />, text: "Analysis" },
-          { icon: <Icons.Refresh />, text: "Mapping" },
-          { icon: <Icons.Shield />, text: "Security" },
-          { icon: <Icons.Chart />, text: "Flow Check" }
-        ].map((item, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className="flex items-center gap-3 bg-white/[0.03] p-3 rounded-lg border border-white/10"
-          >
-            <div className="text-blue-400">{item.icon}</div>
-            <span className="text-sm font-medium text-white/80">{item.text}</span>
-            <div className="ml-auto w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
-          </motion.div>
+        {shouldRender && items.map((item, i) => (
+          <ChecklistItem key={i} item={item} i={i} progress={progress} />
         ))}
       </div>
     </div>
   );
 };
 
-const Step2Visual = () => {
+const CodeLine = ({ line, i, progress }: { line: string, i: number, progress: MotionValue<number> }) => {
+  const y = useTransform(progress, [-0.2 + (i * 0.02), 0], ["110%", "0%"]);
+  const opacity = useTransform(progress, [-0.2 + (i * 0.02), 0, 0.2 - (i * 0.02)], [0, 1, 0]);
+
+  return (
+    <div className="overflow-hidden flex">
+      <motion.div style={{ y, opacity }} className="flex">
+        <span className="w-6 text-white/20 select-none mr-4">{i + 1}</span>
+        <span className={line.startsWith("import") ? "text-purple-400" : line.includes("const") ? "text-blue-400" : "text-gray-300"}>
+          {line || "\u00A0"}
+        </span>
+      </motion.div>
+    </div>
+  );
+};
+
+const Step2Visual = ({ progress }: { progress: MotionValue<number> }) => {
+  const isActive = useTransform(progress, (p: number) => p > -0.5 && p < 0.5);
+  const [shouldRender, setShouldRender] = useState(false);
+  useMotionValueEvent(isActive, "change", (v) => setShouldRender(v));
+
   const codeLines = [
     "import { Solution } from '@exerra/core';",
     "",
@@ -115,35 +149,21 @@ const Step2Visual = () => {
 
         {/* Editor Body */}
         <div className="p-6 space-y-1 font-mono">
-          {codeLines.map((line, i) => (
-            <div key={i} className="overflow-hidden flex">
-              <motion.div
-                initial={{ y: "110%" }}
-                whileInView={{ y: 0 }}
-                transition={{
-                  duration: 0.8,
-                  delay: i * 0.06,
-                  ease: [0.625, 0.05, 0, 1]
-                }}
-                className="flex"
-              >
-                <span className="w-6 text-white/20 select-none mr-4">{i + 1}</span>
-                <span className={line.startsWith("import") ? "text-purple-400" : line.includes("const") ? "text-blue-400" : "text-gray-300"}>
-                  {line || "\u00A0"}
-                </span>
-              </motion.div>
-            </div>
+          {shouldRender && codeLines.map((line, i) => (
+            <CodeLine key={i} line={line} i={i} progress={progress} />
           ))}
-          <div
-            className="w-2 h-4 bg-blue-500 mt-1 ml-10 animate-pulse"
-          />
+          {shouldRender && <div className="w-2 h-4 bg-blue-500 mt-1 ml-10 animate-pulse" />}
         </div>
       </div>
     </div>
   );
 };
 
-const Step3Visual = () => {
+const Step3Visual = ({ progress }: { progress: MotionValue<number> }) => {
+  const isActive = useTransform(progress, (p) => p > -0.5 && p < 0.5);
+  const [shouldRender, setShouldRender] = useState(false);
+  useMotionValueEvent(isActive, "change", (v) => setShouldRender(v));
+
   return (
     <div className="h-full p-8 flex items-center gap-4 justify-between relative overflow-hidden">
       {/* Background Grid Pattern (Overlay) */}
@@ -171,20 +191,24 @@ const Step3Visual = () => {
       {/* LHS: Solution */}
       <div className="w-1/2 z-10 flex flex-col items-center">
         <div
-          className="w-32 h-32 bg-blue-600/10 rounded-full border border-blue-500/30 flex items-center justify-center mb-6 relative group animate-bounce"
+          className={`w-32 h-32 bg-blue-600/10 rounded-full border border-blue-500/30 flex items-center justify-center mb-6 relative group ${shouldRender ? 'animate-bounce' : ''}`}
           style={{ animationDuration: '4s' }}
         >
           <div className="absolute inset-0 rounded-full bg-blue-500/10" />
           <div className="text-blue-500 relative z-10 scale-125"><Icons.Rocket /></div>
 
-          <div
-            className="absolute inset-[-10px] border border-dashed border-white/5 rounded-full animate-spin"
-            style={{ animationDuration: '20s' }}
-          />
-          <div
-            className="absolute inset-[-25px] border border-dashed border-white/10 rounded-full animate-spin"
-            style={{ animationDuration: '30s', animationDirection: 'reverse' }}
-          />
+          {shouldRender && (
+            <>
+              <div
+                className={`absolute inset-[-10px] border border-dashed border-white/5 rounded-full animate-spin`}
+                style={{ animationDuration: '20s' }}
+              />
+              <div
+                className={`absolute inset-[-25px] border border-dashed border-white/10 rounded-full animate-spin`}
+                style={{ animationDuration: '30s', animationDirection: 'reverse' }}
+              />
+            </>
+          )}
         </div>
         <span className="text-white/40 text-[11px] tracking-[-0.02em] uppercase font-black"
           style={{ fontFamily: 'Helvetica, "Helvetica Neue", Arial, sans-serif', transform: 'scaleX(0.8)', display: 'inline-block' }}>
@@ -215,93 +239,109 @@ const Step3Visual = () => {
           ))}
 
           {/* Orbiting Ring */}
-          <div className="absolute inset-[-20px] rounded-full border border-white/[0.05] border-dashed animate-[spin_20s_linear_infinite]" />
+          {shouldRender && <div className="absolute inset-[-20px] rounded-full border border-white/[0.05] border-dashed animate-[spin_20s_linear_infinite]" />}
         </div>
       </div>
     </div>
   );
 };
 
-const Step4Visual = () => (
-  <div className="h-full relative overflow-hidden bg-black font-mono">
-    {/* Video Overlay Effect (Scanning Beam) - CSS only */}
-    <div
-      className="absolute inset-0 z-30 pointer-events-none bg-gradient-to-b from-transparent via-blue-500/10 to-transparent h-1/2 animate-pulse"
-      style={{ animationDuration: '3s' }}
-    />
+const StatItem = ({ stat, i, progress }: { stat: any, i: number, progress: MotionValue<number> }) => {
+  const x = useTransform(progress, [-0.2 + (i * 0.1), 0], ["-100%", "0%"]);
+  const opacity = useTransform(progress, [-0.2 + (i * 0.1), 0, 0.2], [0, 1, 0]);
 
-    {/* Recording UI */}
-    <div className="absolute top-6 left-6 z-40 flex items-center gap-2">
-      <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />
-      <span className="text-[10px] text-red-500 font-bold uppercase tracking-widest">REC</span>
-      <span className="text-[10px] text-white/40 ml-2">CH-01 // LIVE_FEED</span>
-    </div>
-
-    <div className="p-8 h-full flex flex-col relative z-20">
-      <div className="flex items-center justify-between mb-8 mt-4">
-        <div className="flex flex-col">
-          <span className="text-[10px] text-white/20 uppercase tracking-[0.3em]">Network Topology</span>
-          <span className="text-white/60 text-xs">A-CLUSTER // ACTIVE</span>
+  return (
+    <div className="bg-white/[0.02] border border-white/5 rounded-lg p-4 flex flex-col">
+      <div className="flex justify-between items-center mb-2">
+        <span className="text-[8px] uppercase text-white/20">{stat.label}</span>
+        <div className="w-1 h-1 rounded-full bg-blue-500/50" />
+      </div>
+      <span className="text-lg text-white/70">{stat.value}</span>
+      <div className="flex-1 mt-auto">
+        <div className="w-full h-[2px] bg-white/5 overflow-hidden">
+          <motion.div
+            style={{ x, opacity, width: `${stat.p}%` }}
+            className="h-full bg-blue-500/20"
+          />
         </div>
-        <div className="text-blue-500/40 scale-150"><Icons.Tension /></div>
+      </div>
+    </div>
+  );
+};
+
+const Step4Visual = ({ progress }: { progress: MotionValue<number> }) => {
+  const isActive = useTransform(progress, (p: number) => p > -0.5 && p < 0.5);
+  const [shouldRender, setShouldRender] = useState(false);
+  useMotionValueEvent(isActive, "change", (v) => setShouldRender(v));
+
+  const stats = [
+    { label: "Flow Rate", value: "84.2%", p: 84 },
+    { label: "Sync Status", value: "Optimal", p: 100 },
+    { label: "Data Integrity", value: "99.9%", p: 99 },
+    { label: "Load Balancer", value: "Active", p: 100 }
+  ];
+
+  return (
+    <div className="h-full relative overflow-hidden bg-black font-mono">
+      {/* Video Overlay Effect (Scanning Beam) - CSS only */}
+      {shouldRender && (
+        <div
+          className="absolute inset-0 z-30 pointer-events-none bg-gradient-to-b from-transparent via-blue-500/10 to-transparent h-1/2 animate-pulse"
+          style={{ animationDuration: '3s' }}
+        />
+      )}
+
+      {/* Recording UI */}
+      <div className="absolute top-6 left-6 z-40 flex items-center gap-2">
+        {shouldRender && <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse" />}
+        <span className="text-[10px] text-red-500 font-bold uppercase tracking-widest">REC</span>
+        <span className="text-[10px] text-white/40 ml-2">CH-01 // LIVE_FEED</span>
       </div>
 
-      {/* Grid of data points */}
-      <div className="flex-1 grid grid-cols-2 gap-3">
-        {[
-          { label: "Flow Rate", value: "84.2%", p: 84 },
-          { label: "Sync Status", value: "Optimal", p: 100 },
-          { label: "Data Integrity", value: "99.9%", p: 99 },
-          { label: "Load Balancer", value: "Active", p: 100 }
-        ].map((stat, i) => (
-          <div key={i} className="bg-white/[0.02] border border-white/5 rounded-lg p-4 flex flex-col">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-[8px] uppercase text-white/20">{stat.label}</span>
-              <div className="w-1 h-1 rounded-full bg-blue-500/50" />
-            </div>
-            <span className="text-lg text-white/70">{stat.value}</span>
-            <div className="flex-1 mt-auto">
-              <div className="w-full h-[2px] bg-white/5 overflow-hidden">
-                <motion.div
-                  initial={{ x: "-100%" }}
-                  whileInView={{ x: "0%" }}
-                  transition={{ duration: 1, delay: i * 0.1 }}
-                  className="h-full bg-blue-500/20"
-                  style={{ width: `${stat.p}%` }}
-                />
-              </div>
-            </div>
+      <div className="p-8 h-full flex flex-col relative z-20">
+        <div className="flex items-center justify-between mb-8 mt-4">
+          <div className="flex flex-col">
+            <span className="text-[10px] text-white/20 uppercase tracking-[0.3em]">Network Topology</span>
+            <span className="text-white/60 text-xs">A-CLUSTER // ACTIVE</span>
           </div>
-        ))}
+          <div className="text-blue-500/40 scale-150"><Icons.Tension /></div>
+        </div>
+
+        {/* Grid of data points */}
+        <div className="flex-1 grid grid-cols-2 gap-3">
+          {shouldRender && stats.map((stat, i) => (
+            <StatItem key={i} stat={stat} i={i} progress={progress} />
+          ))}
+        </div>
+
+        {/* Bottom Metadata */}
+        <div className="mt-6 flex justify-between items-end border-t border-white/5 pt-4 opacity-40 text-[9px]">
+          <div className="flex flex-col gap-1">
+            <span>LATENCY: 14MS</span>
+            <span>PACKETS: 1.2M/SEC</span>
+          </div>
+          <div className="text-right">
+            <span>TIMESTAMP: 2026.02.14</span>
+            <br />
+            <span>08:14:22:01</span>
+          </div>
+        </div>
       </div>
 
-      {/* Bottom Metadata */}
-      <div className="mt-6 flex justify-between items-end border-t border-white/5 pt-4 opacity-40 text-[9px]">
-        <div className="flex flex-col gap-1">
-          <span>LATENCY: 14MS</span>
-          <span>PACKETS: 1.2M/SEC</span>
+      {/* HUD Elements */}
+      <div className="absolute inset-0 border border-white/5 pointer-events-none m-4 flex flex-col justify-between">
+        <div className="flex justify-between p-2">
+          <div className="w-4 h-4 border-t border-l border-white/20" />
+          <div className="w-4 h-4 border-t border-r border-white/20" />
         </div>
-        <div className="text-right">
-          <span>TIMESTAMP: 2026.02.14</span>
-          <br />
-          <span>08:14:22:01</span>
+        <div className="flex justify-between p-2">
+          <div className="w-4 h-4 border-b border-l border-white/20" />
+          <div className="w-4 h-4 border-b border-r border-white/20" />
         </div>
       </div>
     </div>
-
-    {/* HUD Elements */}
-    <div className="absolute inset-0 border border-white/5 pointer-events-none m-4 flex flex-col justify-between">
-      <div className="flex justify-between p-2">
-        <div className="w-4 h-4 border-t border-l border-white/20" />
-        <div className="w-4 h-4 border-t border-r border-white/20" />
-      </div>
-      <div className="flex justify-between p-2">
-        <div className="w-4 h-4 border-b border-l border-white/20" />
-        <div className="w-4 h-4 border-b border-r border-white/20" />
-      </div>
-    </div>
-  </div>
-);
+  );
+};
 
 const steps = [
   {
@@ -376,8 +416,8 @@ export default function OurProcess() {
 
   return (
     <section id="process" ref={containerRef} className="relative min-h-[400vh] bg-black">
-      {/* DarkVeil Background Effect */}
-      <div className="sticky top-0 h-screen z-0 pointer-events-none opacity-60">
+      {/* DarkVeil Background Effect - Optimized settings for performance */}
+      <div className="sticky top-0 h-screen z-0 pointer-events-none opacity-60" style={{ willChange: "auto" }}>
         <DarkVeil
           hueShift={45}
           noiseIntensity={0}
@@ -391,7 +431,8 @@ export default function OurProcess() {
 
       <motion.div
         style={{
-          opacity: useTransform(scrollYProgress, [0, 0.1, 0.9, 1], [0, 1, 1, 0])
+          opacity: useTransform(scrollYProgress, [0, 0.1, 0.9, 1], [0, 1, 1, 0]),
+          willChange: "auto"
         }}
         className="sticky top-0 h-screen flex items-center justify-center overflow-hidden z-10 -mt-[100vh]"
       >
@@ -458,7 +499,12 @@ export default function OurProcess() {
                 return (
                   <motion.div
                     key={step.id}
-                    style={{ opacity, y, pointerEvents }}
+                    style={{
+                      opacity,
+                      y,
+                      pointerEvents,
+                      willChange: "transform, opacity"
+                    }}
                     className="absolute top-[-40px] left-0 w-full space-y-6"
                   >
                     <div className="flex items-center gap-4">
@@ -492,7 +538,7 @@ export default function OurProcess() {
           </div>
 
           {/* Right: Cards Stack - Angled Left */}
-          <div className="relative h-[600px] hidden lg:block">
+          <div className="relative h-[600px] hidden lg:block" style={{ contain: "layout style paint" }}>
             <div className="absolute inset-0 -right-12" style={{ perspective: '1200px', perspectiveOrigin: 'center center' }}>
               {steps.map((step, index) => (
                 <ProcessCard
@@ -512,123 +558,148 @@ export default function OurProcess() {
   );
 }
 
-// Extracted Component to fix Rules of Hooks
+// Extracted Component to fix Rules of Hooks - Memoized for performance
 interface ProcessCardProps {
   step: { id: number; title: string; description: string;[key: string]: any };
   index: number;
-  totalProgress: any;
-  POSITIONS: any[];
+  totalProgress: MotionValue<number>;
+  POSITIONS: { x: number; y: number; z: number; scale: number; zIndex: number; rotateX: number }[];
   stepsCount: number;
 }
 
-const ProcessCard = ({ step, index, totalProgress, POSITIONS, stepsCount }: ProcessCardProps) => {
-  // Determine layout for this card based on global cycle progress
-  const transform = useTransform(totalProgress, (t: number) => {
-    // Current cycle step (0, 1, 2, 3) relative to total scroll
-    // Ensure we don't exceed bounds
-    const stepCount = stepsCount;
-    const clampedT = Math.min(t, stepCount - 0.001);
+const ProcessCard = memo(({ step, index, totalProgress, POSITIONS, stepsCount }: ProcessCardProps) => {
+  const willChange = useWillChange();
 
-    const currentStepIndex = Math.floor(clampedT);
-    const stepProgress = clampedT - currentStepIndex;
+  // Local progress for internal animations (0 is perfectly active)
+  const componentProgress = useTransform(totalProgress, (t: number) => t - index);
 
-    // Calculate which slot this card is currently in.
-    // Logic: At step 0, card 0 is at slot 0.
-    // At step 1, card 0 is at slot 3 (dropped). Card 1 is at slot 0.
-    // Slot index = (CardIndex - StepIndex + TotalSteps) % TotalSteps
-    const currentSlot = (index - currentStepIndex + stepCount) % stepCount;
+  // Optimized transforms using continuous circular logic
+  // We define the curve function once to keep it consistent
+  const getPhaseData = (t: number) => {
+    // Ensure positive modulus
+    const shifted = t - index;
+    const cycle = stepsCount;
+    // We want T to be 0..4 representing the cycle state
+    // t=index -> shifted=0 -> Start of cycle (Phase 0: Front->Drop)
+    let T = shifted % cycle;
+    if (T < 0) T += cycle;
 
-    // Determine Target Slot
-    // If currentSlot is 0 (Front), it drops to Slot 3 (Back)
-    // Else, it simply moves forward to Slot - 1
-    let nextSlot = currentSlot === 0 ? stepCount - 1 : currentSlot - 1;
-
-    const startPos = POSITIONS[currentSlot];
-    const endPos = POSITIONS[nextSlot];
-
-    if (currentSlot === 0) {
-      // DROP ANIMATION (Slot 0 -> Slot 3)
-      // Non-linear path: Drop down -> Go Back -> Rise up to Slot 3
-
-      // Phase 1 (0-50%): Drop down and start moving back
-      if (stepProgress < 0.5) {
-        const p = stepProgress * 2; // 0 to 1
-        return {
-          x: startPos.x + (p * -50), // Slight left
-          y: startPos.y + (p * 400), // BIG DROP
-          z: startPos.z + (p * -200), // Start moving back
-          scale: startPos.scale * (1 - p * 0.1),
-          rotateX: startPos.rotateX + (p * 20),
-          zIndex: 4 // Stay on top initially? or drop behavior?
-        };
-      }
-      // Phase 2 (50%-100%): Move to final Slot 3 Back Position
-      else {
-        const p = (stepProgress - 0.5) * 2; // 0 to 1
-        // Interpolate from [Dropped State] to [EndPos]
-        const droppedX = startPos.x - 50;
-        const droppedY = startPos.y + 400;
-        const droppedZ = startPos.z - 200;
-        const droppedRot = startPos.rotateX + 20;
-
-        return {
-          x: droppedX + (endPos.x - droppedX) * p,
-          y: droppedY + (endPos.y - droppedY) * p,
-          z: droppedZ + (endPos.z - droppedZ) * p,
-          scale: (startPos.scale * 0.9) + (endPos.scale - (startPos.scale * 0.9)) * p,
-          rotateX: droppedRot + (endPos.rotateX - droppedRot) * p,
-          zIndex: 0 // Drop behind
-        };
-      }
-    } else {
-      // SHIFT ANIMATION (Slot N -> Slot N-1)
-      // Linear interpolation
-      return {
-        x: startPos.x + (endPos.x - startPos.x) * stepProgress,
-        y: startPos.y + (endPos.y - startPos.y) * stepProgress,
-        z: startPos.z + (endPos.z - startPos.z) * stepProgress,
-        scale: startPos.scale + (endPos.scale - startPos.scale) * stepProgress,
-        rotateX: startPos.rotateX + (endPos.rotateX - startPos.rotateX) * stepProgress,
-        zIndex: startPos.zIndex // Usually keeps higher z-index until swaps? 
-      };
-    }
-  });
-
-  // RENDER CARD CONTENT BASED ON STEP ID
-  const renderVisual = () => {
-    switch (step.id) {
-      case 1: return <Step1Visual />;
-      case 2: return <Step2Visual />;
-      case 3: return <Step3Visual />;
-      default: return <Step4Visual />;
-    }
+    const phase = Math.floor(T);
+    const p = T - phase;
+    return { phase, p };
   };
 
-  // Single consolidated transform string — one useTransform instead of 6
-  const cardStyle = useTransform(transform, (t) => ({
-    transform: `translateX(${t.x}px) translateY(${t.y}px) translateZ(${t.z}px) scale(${t.scale}) rotateX(${t.rotateX}deg) rotateY(-10deg)`,
-    zIndex: Math.round(t.zIndex),
-  }));
+  const x = useTransform(totalProgress, (t: number) => {
+    const { phase, p } = getPhaseData(t);
+    // Phase 0: 0->3 (Drop), 1: 3->2, 2: 2->1, 3: 1->0
+
+    if (phase === 0) {
+      // Special Drop
+      if (p < 0.5) return POSITIONS[0].x + (p * 2 * -50);
+      const pp = (p - 0.5) * 2;
+      return (POSITIONS[0].x - 50) + (POSITIONS[3].x - (POSITIONS[0].x - 50)) * pp;
+    }
+
+    // Map phases
+    const start = 4 - phase;
+    const end = start - 1;
+
+    // Bounds check for safety (though logic should hold)
+    const P1 = POSITIONS[start] || POSITIONS[0];
+    const P2 = POSITIONS[end] || POSITIONS[3]; // seamless wrap backup
+
+    // Linear interpolation
+    return P1.x + (P2.x - P1.x) * p;
+  });
+
+  const y = useTransform(totalProgress, (t: number) => {
+    const { phase, p } = getPhaseData(t);
+    if (phase === 0) {
+      if (p < 0.5) return POSITIONS[0].y + (p * 2 * 400); // Drop down
+      const pp = (p - 0.5) * 2;
+      return (POSITIONS[0].y + 400) + (POSITIONS[3].y - (POSITIONS[0].y + 400)) * pp;
+    }
+    const start = 4 - phase;
+    const P1 = POSITIONS[start] || POSITIONS[0];
+    const P2 = POSITIONS[start - 1] || POSITIONS[3];
+    return P1.y + (P2.y - P1.y) * p;
+  });
+
+  const z = useTransform(totalProgress, (t: number) => {
+    const { phase, p } = getPhaseData(t);
+    if (phase === 0) {
+      if (p < 0.5) return POSITIONS[0].z + (p * 2 * -200); // Move back
+      const pp = (p - 0.5) * 2;
+      return (POSITIONS[0].z - 200) + (POSITIONS[3].z - (POSITIONS[0].z - 200)) * pp;
+    }
+    const start = 4 - phase;
+    const P1 = POSITIONS[start] || POSITIONS[0];
+    const P2 = POSITIONS[start - 1] || POSITIONS[3];
+    return P1.z + (P2.z - P1.z) * p;
+  });
+
+  const scale = useTransform(totalProgress, (t: number) => {
+    const { phase, p } = getPhaseData(t);
+    if (phase === 0) {
+      if (p < 0.5) return POSITIONS[0].scale * (1 - p * 2 * 0.1); // Shrink
+      const pp = (p - 0.5) * 2;
+      return (POSITIONS[0].scale * 0.9) + (POSITIONS[3].scale - (POSITIONS[0].scale * 0.9)) * pp;
+    }
+    const start = 4 - phase;
+    const P1 = POSITIONS[start] || POSITIONS[0];
+    const P2 = POSITIONS[start - 1] || POSITIONS[3];
+    return P1.scale + (P2.scale - P1.scale) * p;
+  });
+
+  const rotateX = useTransform(totalProgress, (t: number) => {
+    const { phase, p } = getPhaseData(t);
+    if (phase === 0) {
+      if (p < 0.5) return POSITIONS[0].rotateX + (p * 2 * 20); // Tilt
+      const pp = (p - 0.5) * 2;
+      return (POSITIONS[0].rotateX + 20) + (POSITIONS[3].rotateX - (POSITIONS[0].rotateX + 20)) * pp;
+    }
+    const start = 4 - phase;
+    const P1 = POSITIONS[start] || POSITIONS[0];
+    const P2 = POSITIONS[start - 1] || POSITIONS[3];
+    return P1.rotateX + (P2.rotateX - P1.rotateX) * p;
+  });
+
+  // Simplified zIndex - just standard integer steps
+  const zIndex = useTransform(totalProgress, (t: number) => {
+    const { phase, p } = getPhaseData(t);
+    if (phase === 0) return p < 0.5 ? 4 : 0;
+    const start = 4 - phase;
+    return (POSITIONS[start] || POSITIONS[0]).zIndex;
+  });
+
+  const renderVisual = () => {
+    switch (step.id) {
+      case 1: return <Step1Visual progress={componentProgress} />;
+      case 2: return <Step2Visual progress={componentProgress} />;
+      case 3: return <Step3Visual progress={componentProgress} />;
+      default: return <Step4Visual progress={componentProgress} />;
+    }
+  };
 
   return (
     <motion.div
       style={{
-        transform: useTransform(cardStyle, s => s.transform),
-        zIndex: useTransform(cardStyle, s => s.zIndex),
+        x, y, z, scale, rotateX, zIndex,
+        rotateY: -10,
         transformOrigin: "center center",
         transformStyle: "preserve-3d",
         background: "rgba(0, 0, 0, 0.95)",
+        willChange
       }}
       className="absolute top-1/4 left-0 w-full h-[500px] rounded-2xl border border-white/10 shadow-2xl overflow-hidden"
     >
       <div className="p-8 h-full flex flex-col justify-between relative overflow-hidden">
         {/* Decorative Background Elements */}
-        <div className="absolute inset-0 pointer-events-none opacity-20">
-          {/* Blueprint Grid */}
+        {/* Reduced opacity for bg elements to cheapen paint cost if possible */}
+        <div className="absolute inset-0 pointer-events-none opacity-20" style={{ contain: 'strict' }}>
           <div className="absolute inset-0"
             style={{ backgroundImage: 'radial-gradient(circle, rgba(59, 130, 246, 0.15) 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
 
-          {/* Technical Metadata Strings */}
           <div className="absolute top-12 right-8 text-[8px] font-mono text-blue-400/30 rotate-90 origin-right whitespace-nowrap">
             SYS_PROCESS_INIT::{index} // BUFFER_LATENCY::14ms // CORE_SYNC_OK
           </div>
@@ -636,7 +707,6 @@ const ProcessCard = ({ step, index, totalProgress, POSITIONS, stepsCount }: Proc
             EXERRA_PROTOCOL_V4.2 // ENCRYPT_AES_256 // KEY_VERIFIED
           </div>
 
-          {/* Floating Technical Particles - CSS only */}
           <div
             className="absolute bottom-0 left-1/4 w-[1px] h-20 bg-gradient-to-t from-transparent via-blue-500/40 to-transparent animate-pulse"
             style={{ animationDuration: '4s', animationDelay: `${index * 0.5}s` }}
@@ -647,7 +717,7 @@ const ProcessCard = ({ step, index, totalProgress, POSITIONS, stepsCount }: Proc
           />
         </div>
 
-        {/* HUD Corner Markers */}
+        {/* HUD Corner Markers - optimized with border helpers instead of divs if possible, but small divs are fine */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-6 left-6 w-6 h-6 border-t-2 border-l-2 border-white/10" />
           <div className="absolute top-6 right-6 w-6 h-6 border-t-2 border-r-2 border-white/10" />
@@ -655,12 +725,10 @@ const ProcessCard = ({ step, index, totalProgress, POSITIONS, stepsCount }: Proc
           <div className="absolute bottom-6 right-6 w-6 h-6 border-b-2 border-r-2 border-white/10" />
         </div>
 
-        {/* Glass Shine Effect - CSS only */}
         <div
           className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.02] to-transparent -skew-x-12 pointer-events-none"
         />
 
-        {/* Card Content Header */}
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
@@ -671,11 +739,12 @@ const ProcessCard = ({ step, index, totalProgress, POSITIONS, stepsCount }: Proc
           <h4 className="text-2xl font-semibold text-white mb-4">{step.title}</h4>
         </div>
 
-        {/* Card Content - Custom Visuals */}
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center" style={{ contain: 'content' }}>
           {renderVisual()}
         </div>
       </div>
     </motion.div>
   );
-};
+});
+
+ProcessCard.displayName = 'ProcessCard';

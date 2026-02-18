@@ -21,10 +21,8 @@ export default function Hero() {
         scrollProgressRef.current = latest;
     });
 
-    // Force scroll to top on mount?
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, []);
+    // We let the browser manage scroll restoration or rely on the parent's control.
+    // Explicitly removing window.scrollTo(0, 0) to avoid "snap" hitches on slow reloads.
 
     return (
         <div id="home" ref={containerRef} className="relative h-[250vh] w-full bg-[#040814]">
@@ -78,14 +76,14 @@ export default function Hero() {
                     />
                 </div>
 
-                <div className="absolute inset-0 z-0">
+                <div className="absolute inset-0 z-5">
                     <ParticleWaveScene
                         scrollRef={scrollProgressRef}
                         setHovering={setIsHovering}
                     />
                 </div>
 
-                <HeroOverlay />
+                <HeroOverlay scrollYProgress={scrollYProgress} />
             </div>
         </div>
     );

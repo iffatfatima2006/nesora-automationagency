@@ -255,11 +255,13 @@ function SceneContent({ scrollRef, setHovering }: { scrollRef: React.MutableRefO
 export default function ParticleWaveScene({ scrollRef, setHovering }: { scrollRef: React.MutableRefObject<number>, setHovering: (h: boolean) => void }) {
     // Use a stable key or conditional rendering to force re-mount if needed
     return (
-        <div className="h-full w-full absolute inset-0 -z-10">
+        <div className="h-full w-full absolute inset-0 -z-10 pointer-events-auto cursor-pointer">
             <Canvas
                 camera={{ position: [0, 5, 30], fov: 45 }}
                 dpr={[1, 1.5]}
                 gl={{ antialias: false, alpha: true, powerPreference: 'high-performance' }}
+                eventSource={typeof document !== 'undefined' ? document.getElementById('root') || undefined : undefined}
+                eventPrefix="client"
             >
                 {/* Transparent background to let CSS gradient show through */}
                 {/* <color attach="background" args={["#000000"]} /> */}

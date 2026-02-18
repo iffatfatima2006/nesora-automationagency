@@ -107,8 +107,9 @@ const LightRays = ({
         const currentContainer = containerRef.current;
 
         const initializeWebGL = async () => {
-            // Wait for next frame/short delay to ensure container is ready
-            await new Promise(resolve => setTimeout(resolve, 10));
+            // Increased delay to 200ms to ensure the site's reveal animation is clear
+            // before we kick off the WebGL context creation and program compilation.
+            await new Promise(resolve => setTimeout(resolve, 200));
 
             if (!isMounted || !currentContainer) return;
 

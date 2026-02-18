@@ -1,17 +1,21 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import Loader from "./components/Loader";
 import Hero from "./components/Hero";
-import BenefitsSection from "./components/BenefitsSection";
-import OurProcess from "./components/OurProcess";
-import AITransforms from "./components/AITransforms";
-import NeedMoreProof from "./components/NeedMoreProof";
-import NameDrops from "./components/NameDrops";
-import Testimonials from "./components/Testimonials";
-import Pricing from "./components/Pricing";
-import Footer from "./components/Footer";
+
+// Lazy load heavy below-the-fold components
+const BenefitsSection = dynamic(() => import("./components/BenefitsSection"), { ssr: true });
+const OurProcess = dynamic(() => import("./components/OurProcess"), { ssr: true });
+const AITransforms = dynamic(() => import("./components/AITransforms"), { ssr: true });
+const NeedMoreProof = dynamic(() => import("./components/NeedMoreProof"), { ssr: true });
+const NameDrops = dynamic(() => import("./components/NameDrops"), { ssr: true });
+const Testimonials = dynamic(() => import("./components/Testimonials"), { ssr: true });
+const Pricing = dynamic(() => import("./components/Pricing"), { ssr: true });
+const Footer = dynamic(() => import("./components/Footer"), { ssr: true });
+const FloatingCTA = dynamic(() => import("./components/FloatingCTA"), { ssr: false });
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
@@ -23,6 +27,7 @@ export default function Home() {
           <Loader onComplete={() => setIsLoading(false)} />
         )}
       </AnimatePresence>
+      <FloatingCTA />
       <Hero />
       <BenefitsSection />
       <OurProcess />

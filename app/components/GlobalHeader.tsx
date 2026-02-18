@@ -18,25 +18,39 @@ export default function GlobalHeader() {
 
       const heroHide = vh * 1.0;
       const benefitsStart = vh * 2.5;
-      const processEnd = vh * 10.3;      // End of Our Process
-      const proofStart = vh * 15.6;     // Start of Need More Proof
-      const proofEnd = vh * 17.8;       // End of Need More Proof
-      const pricingStart = vh * 21.5;   // Start of Pricing
+      const scaleStart = vh * 5.5;      // Start of "Built to Scale"
+      const processStart = vh * 6.5;    // Start of Our Process
+      const processEnd = vh * 10.3;     // End of Our Process
+      const proofStart = vh * 16.3;     // Start of Need More Proof (600% from 10.3)
+      const proofEnd = vh * 20.3;       // End of Need More Proof (400vh)
+      const pricingStart = vh * 24.5;   // Start of Pricing (shifted)
+      const footerStart = vh * 28.0;    // Start of Footer (shifted)
+
+      let newVariant: string;
 
       if (latest < heroHide) {
-        setVariant("visible");
+        newVariant = "visible";
       } else if (latest >= heroHide && latest < benefitsStart) {
-        setVariant("hidden");
-      } else if (latest >= benefitsStart && latest < processEnd) {
-        setVariant("visible"); // Benefits & Process (Window 2 & 3)
+        newVariant = "hidden";
+      } else if (latest >= benefitsStart && latest < scaleStart) {
+        newVariant = "visible"; // Benefits Panels 1-3
+      } else if (latest >= scaleStart && latest < processStart) {
+        newVariant = "hidden";  // Hide during "Built to Scale" / Transition to next window
+      } else if (latest >= processStart && latest < processEnd) {
+        newVariant = "visible"; // Our Process (Window 3)
       } else if (latest >= processEnd && latest < proofStart) {
-        setVariant("hidden"); // Case Studies (4th Window)
+        newVariant = "hidden"; // Case Studies (4th Window)
       } else if (latest >= proofStart && latest < proofEnd) {
-        setVariant("visible"); // Need More Proof
-      } else if (latest >= proofEnd && latest < pricingStart) {
-        setVariant("hidden"); // Name Drops & Testimonials
+        newVariant = "visible"; // Need More Proof
+      } else if (latest >= proofEnd && latest < footerStart) {
+        newVariant = "hidden"; // Name Drops, Testimonials & Pricing
       } else {
-        setVariant("visible"); // Pricing & Footer
+        newVariant = "visible"; // Footer
+      }
+
+      // Only update state if variant actually changed
+      if (newVariant !== variant) {
+        setVariant(newVariant);
       }
     }
   });
@@ -74,14 +88,34 @@ export default function GlobalHeader() {
         duration: 0.4,
         ease: [0.16, 1, 0.3, 1]
       }}
+      style={{ willChange: variant !== "visible" ? "transform, opacity" : "auto" }}
       className="fixed left-1/2 -translate-x-1/2 z-[100] pointer-events-auto overflow-hidden flex items-center justify-center border border-transparent stabilize-text"
     >
       <div className="w-full max-w-7xl px-6 md:px-12 py-5 flex items-center justify-between font-sans">
 
         {/* Left - Logo */}
         <div className="flex-1 flex justify-start">
-          <div className="select-none h-10 w-10 flex items-center justify-center rounded-full border border-white">
-            <span className="text-lg font-normal text-white pt-[1px]" style={{ fontFamily: "var(--font-bodoni), serif" }}>N</span>
+          <div className="select-none h-10 w-10 flex items-center justify-center relative group cursor-pointer">
+            {/* Modern E hexagon logo for Exerra */}
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {/* Hexagon outline */}
+              <path d="M20 2 L32 9 L32 23 L20 30 L8 23 L8 9 Z"
+                stroke="white"
+                strokeWidth="1.5"
+                opacity="0.6"
+                fill="none" />
+
+              {/* Modern E letterform */}
+              <path d="M15 12 L25 12 M15 12 L15 20 M15 16 L23 16 M15 20 L25 20"
+                stroke="white"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                opacity="0.95" />
+            </svg>
+
+            {/* Hover glow */}
+            <div className="absolute inset-0 bg-white/0 group-hover:bg-white/5 transition-all duration-300"></div>
           </div>
         </div>
 
