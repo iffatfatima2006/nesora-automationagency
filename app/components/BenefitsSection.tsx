@@ -9,7 +9,7 @@ const panels = [
         id: "productivity",
         category: "Automation",
         title: "Productivity",
-        description: "Automate repetitive work and reclaim hours every week. Your team focuses on thinking — systems handle the rest.",
+        description: "Automate repetitive work and reclaim hours every week. Your team focuses on strategy while systems handle execution.",
         image: "https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=2070&auto=format&fit=crop", // Modern Office/Desk
         layout: "text-left"
     },
@@ -17,7 +17,7 @@ const panels = [
         id: "cost",
         category: "Efficiency",
         title: "Cost Efficiency",
-        description: "Reduce operational overhead without cutting capability. Automation replaces manual bottlenecks with systems that scale.",
+        description: "Reduce operational overhead without sacrificing capability. Smart automation replaces manual bottlenecks with scalable systems.",
         image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2670&auto=format&fit=crop", // Data/Analytics Dashboard
         layout: "text-right"
     },
@@ -25,7 +25,7 @@ const panels = [
         id: "availability",
         category: "Reliability",
         title: "24/7 Availability",
-        description: "Your business runs even when your team is offline. Support, workflows, and data flows operate continuously.",
+        description: "Your business never stops. Automated support, workflows, and data flows keep everything running around the clock.",
         image: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2670&auto=format&fit=crop", // Tech/Server/Abstract
         layout: "image-dominant" // Special layout
     },
@@ -33,7 +33,7 @@ const panels = [
         id: "scale",
         category: "Growth",
         title: "Built to Scale",
-        description: "Infrastructure designed for growth from day one. Add complexity without adding chaos.",
+        description: "Infrastructure engineered for growth from day one. Scale complexity without the chaos.",
         image: "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2672&auto=format&fit=crop", // Stylized Globe/Network
         layout: "minimal"
     }

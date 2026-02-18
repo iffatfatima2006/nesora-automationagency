@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
 
 function ZoomWord({
@@ -18,12 +18,25 @@ function ZoomWord({
   isFirst: boolean;
   stopAtEnd?: boolean;
 }) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const segment = end - start;
-  // Scale: 15 (Abstract) -> 1 (Readable) -> 0 (Vanish)
+  // Scale: Mobile (2.5) or Desktop (8) -> 1 (Readable) -> 0 (Vanish)
+  const initialScale = isMobile ? 2.5 : 8;
   const scale = useTransform(
     scrollYProgress,
     [start, start + segment * 0.4, end],
-    [15, 1, stopAtEnd ? 1 : 0],
+    [initialScale, 1, stopAtEnd ? 1 : 0],
     { clamp: true }
   );
 
@@ -67,7 +80,7 @@ export default function NeedMoreProof() {
   });
 
   return (
-    <section id="proof" ref={containerRef} className="relative z-0 h-[250vh]" style={{ backgroundColor: "#0a1a3a" }}>
+    <section id="proof" ref={containerRef} className="relative z-0 h-[400vh]" style={{ backgroundColor: "#0a1a3a" }}>
       <div className="sticky top-0 h-screen overflow-hidden flex items-center justify-center" style={{ backgroundColor: "#0a1a3a" }}>
         <ZoomWord word="NEED" scrollYProgress={scrollYProgress} start={0} end={0.333} isFirst={true} />
         <ZoomWord word="MORE" scrollYProgress={scrollYProgress} start={0.333} end={0.666} isFirst={false} />

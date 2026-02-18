@@ -187,18 +187,23 @@ export default function DarkVeil({
             const targetFrameInterval = 1000 / 24; // Cap at 24fps (ambient background)
 
             const loop = () => {
-                if (!renderer || !isMounted) return;
+                // If not mounted or no renderer, stop completely
+                if (!isMounted || !renderer) {
+                    animationIdRef.current = null;
+                    return;
+                }
 
-                // Skip rendering when off-screen
+                // If not visible, stop the loop (don't even request next frame)
+                // The IntersectionObserver will restart it when visible
                 if (!isVisibleRef.current) {
-                    animationIdRef.current = requestAnimationFrame(loop);
+                    animationIdRef.current = null;
                     return;
                 }
 
                 const now = performance.now();
                 if (now - lastFrameTime < targetFrameInterval) {
-                    animationIdRef.current = requestAnimationFrame(loop);
-                    return;
+                   animationIdRef.current = requestAnimationFrame(loop);
+                   return;
                 }
                 lastFrameTime = now;
 
@@ -216,24 +221,41 @@ export default function DarkVeil({
                 animationIdRef.current = requestAnimationFrame(loop);
             };
 
-            animationIdRef.current = requestAnimationFrame(loop);
+            // Setup IntersectionObserver to start/stop loop
+            const observer = new IntersectionObserver(([entry]) => {
+                isVisibleRef.current = entry.isIntersecting;
+                if (entry.isIntersecting && !animationIdRef.current) {
+                    loop();
+                }
+            }, { threshold: 0 });
+            observer.observe(currentContainer);
+
+            // Initial start if visible
+            if (isVisibleRef.current) {
+                loop();
+            }
+
+            // Cleanup function for this specific init execution
+            return () => {
+                window.removeEventListener('resize', resize);
+                observer.disconnect();
+                if (animationIdRef.current) {
+                    cancelAnimationFrame(animationIdRef.current);
+                    animationIdRef.current = null;
+                }
+            };
         };
 
-        init();
+        const cleanupPromise = init();
 
         return () => {
             isMounted = false;
-
-            if (animationIdRef.current) {
-                cancelAnimationFrame(animationIdRef.current);
+            if (cleanupPromise instanceof Promise) {
+                 cleanupPromise.then((cleanup) => cleanup && cleanup());
+            } else if (typeof cleanupPromise === 'function') {
+                // In case init wasn't async (though here it is)
+                (cleanupPromise as Function)();
             }
-            window.removeEventListener('resize', () => { }); // Note warning: anon function won't remove. 
-            // Correct approach implies standardizing resize handler, but since we recreate on dep change, 
-            // we should just be careful. The `resize` func inside `init` is closure-bound. 
-            // In this structure, we can't easily remove specific listener without refactoring.
-            // *Correction*: We can't remove the specific `resize` function because it's defined inside `init`.
-            // However, since `isMounted` prevents execution, it's mostly fine, but let's fix strictly.
-            // Actually, cleanest way is just to rely on component unmount and `isMounted` checks.
 
             if (rendererRef.current) {
                 const gl = rendererRef.current.gl;
@@ -242,18 +264,6 @@ export default function DarkVeil({
             }
         };
     }, [hueShift, noiseIntensity, scanlineIntensity, speed, scanlineFrequency, warpAmount, resolutionScale]);
-
-    // IntersectionObserver to pause when off-screen
-    useEffect(() => {
-        const el = containerRef.current;
-        if (!el) return;
-        const observer = new IntersectionObserver(
-            ([entry]) => { isVisibleRef.current = entry.isIntersecting; },
-            { threshold: 0 }
-        );
-        observer.observe(el);
-        return () => observer.disconnect();
-    }, []);
 
     return <div ref={containerRef} className={`w-full h-full ${className}`} />;
 }

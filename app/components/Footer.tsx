@@ -20,7 +20,8 @@ function ScrollingHeadline() {
             >
                 {repeatedText}
             </div>
-            <style dangerouslySetInnerHTML={{ __html: `
+            <style dangerouslySetInnerHTML={{
+                __html: `
                 @keyframes footerMarquee {
                     0% { transform: translateX(0); }
                     100% { transform: translateX(-50%); }

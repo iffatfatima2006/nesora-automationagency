@@ -79,7 +79,7 @@ const Step1Visual = ({ progress }: { progress: MotionValue<number> }) => {
           )}
           <div className="text-blue-400 opacity-50"><Icons.Scan /></div>
         </div>
-        <div className="absolute bottom-4 left-0 right-0 text-center">
+        <div className="absolute bottom-2 left-0 right-0 text-center">
           <span className="text-xs uppercase tracking-[0.2em] text-blue-400 font-bold"
             style={{ fontFamily: 'var(--font-climate)' }}>
             EXERRA

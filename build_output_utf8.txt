@@ -1,0 +1,74 @@
+﻿
+> my-app@0.1.0 build
+> next build
+
+Γû▓ Next.js 16.1.6 (Turbopack)
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 18.9s
+  Running TypeScript ...
+node.exe : Failed to 
+compile.
+At line:1 char:1
++ & "C:\Program Files
+\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (Failed    
+ to compile.:Stri    
+ng) [], RemoteEx    
+ception
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+
+./app/components/Glob
+alHeader.tsx:26:20
+Type error: Cannot 
+find name 'heroHide'.
+
+[0m [90m 24 |[39m 
+      
+[36mconst[39m 
+pricingStart 
+[33m=[39m vh 
+[33m*[39m [35m21.5
+[39m[33m;[39m   
+[90m// Start of 
+Pricing[39m
+ [90m 25 |[39m
+[31m[1m>[22m[39m
+[90m 26 |[39m       
+[36mif[39m (latest 
+[33m<[39m 
+heroHide) {
+ [90m    |[39m     
+               
+[31m[1m^[22m[39m
+ [90m 27 |[39m     
+    setVariant([32m"
+visible"[39m)[33m;
+[39m
+ [90m 28 |[39m     
+  } [36melse[39m 
+[36mif[39m (latest 
+[33m>=[39m 
+heroHide 
+[33m&&[39m latest 
+[33m<[39m 
+benefitsStart) {
+ [90m 29 |[39m     
+    setVariant([32m"
+hidden"[39m)[33m;[
+39m[0m
+Next.js build worker 
+exited with code: 1 
+and signal: null
