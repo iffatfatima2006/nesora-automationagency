@@ -116,7 +116,7 @@ export default function Loader({ onComplete }: { onComplete: () => void }) {
           animate={{ opacity: showPercentage && !isComplete ? 1 : 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
         >
-          <div className="tracking-wider">LAHORE, PAKISTAN</div>
+          <div className="tracking-wider"></div>
         </motion.div>
 
         <motion.div
